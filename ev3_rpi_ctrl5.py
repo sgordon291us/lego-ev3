@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python2
 #This code allows simple control of the EV3 from the RPi using a text interface.
 #Based on a text command from teh user, this will send a message to the EV3 to
 #perform an action.  Valid actions are:
@@ -8,6 +8,7 @@
 #The it sould not be case-sensitiive to the input taken from the user, but the message
 #send to the EV3 IS case-sensitive
 # This version (4) has the critical procedures IMPORTED from teh ev3_rpi_ctrl_pkg
+# Version 5 uses msg_fmt_send instead of messageGuin() and messageSenbd().  
 import serial
 import time
 import datetime
@@ -79,6 +80,10 @@ def main():
                 ev3Msg = None
                 
             if ev3Msg is not None:
+##                err = ev3_rpi_ctrl_pkg.msg_fmt_send(EV3, "EV3-CMD",ev3Msg,"text")
+##                if err:
+##                    print('*** Error sending {}, err no {}'.format(ev3Msg, err))                             
+                                                    
                 m = ev3_rpi_ctrl_pkg.messageGuin("EV3-CMD",ev3Msg,"text")  #  convert message; select EV3-CMD block to send to
                 print('Sending to EV3 msg: {}'.format(ev3Msg))
                 ev3_rpi_ctrl_pkg.messageSend(EV3, m) # send converted message

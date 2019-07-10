@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python3
 #This code allows simple control of the EV3 from the RPi using a text interface.
 #Based on a text command from teh user, this will send a message to the EV3 to
 #perform an action.  Valid actions are:
@@ -107,37 +107,6 @@ def messageSend(dest_ev3, message): #make send message function
 ##    print('**** Point 3')
     return
 
-def msg_fmt_send(dest_ev3,boxName,ev3Msg,messageType):
-    
-#This proceudre takes the uinformatted "message" and first performs the needed formatting then
-#sends it on the BT in,terface to the EV3.  This procedure was written to try to get around the problem
-#with the AIY software in voice_assist_ev3_ctrlx where it generated an error in messageSend.
-#Instead
-#Params:
-#  dest_ev3 is the pointer to the bluetooth serial interface connected the EV3
-#  boxName is the label on the EV3 box that is to receive the message (like EV3-CMD"
-#  message is the message to send (either a string, number or boolean)
-#  type states the type that the mesage is ("text", "logic", "number")
-#possible errors are
-#   1 No dest EV3 defined
-#   2 bluetooth serial interace is not open
-
-    error = 0
-
-    if dest_ev3 is None:
-        error = 1                # No dest_ev3 defined
-    elif not dest_ev3.isOpen():
-        error = 2                # dest_ev3 not open
-    elif ev3Msg is not None:
-        m = messageGuin("EV3-CMD",ev3Msg,"text")  #  convert message; select EV3-CMD block to send to
-        print('Sending to EV3 msg: {}'.format(ev3Msg))
-        messageSend(dest_ev3, m) # send converted message
-    else:
-        print('** Error with "{}"'.format(ev3Msg))
-        
-    return error
-
-    
 
 def messageRcv(srcEv3, maxWait=4):
 #This procedure receies a message from the EV3.  The inputs are the EV3 interface on src_ev3 and the maximum wait
