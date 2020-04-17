@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#!/usr/bin/env python2
 #This code allows simple control of the EV3 from the RPi using a text interface.
 #Based on a text command from teh user, this will send a message to the EV3 to
 #perform an action.  Valid actions are:
@@ -8,13 +8,39 @@
 #The it sould not be case-sensitiive to the input taken from the user, but the message
 #send to the EV3 IS case-sensitive
 # This version (4) has the critical procedures IMPORTED from teh ev3_rpi_ctrl_pkg
+#
+#This code works as ov 4/10/20 except for the sending of numeric messages to the message block
+#THey are nt received correcyly.  In addition, sendiong logic messages has not been tried.
+#
 import serial
 import time
+import enum
 import datetime
 import struct
 import os
 import sys
 ##import ev3_rpi_ctrl_pkg
+
+# class Ev3_msg_box(enum.Enum):
+#     Main = 1                        #This is the main block to receive commands
+#     Param = "EV3-PARAM"                     #This is the block to receive the first parameter/modifier.  It gets
+#                                             #used after the "PARAM_TIME","PARAM_DIST" OR "PARAM_ANGLE" commabd
+# EV3_MSG_BOX_IDS = {
+#     Ev3_msg_box.Main: "EV3-CMD"             #This is the main block to receive commands
+#     Ev3_msg_box.Param:  "EV3-PARAM"         #This is the block to receive the first parameter/modifier.  It gets
+#                                             #used after the "PARAM_TIME","PARAM_DIST" OR "PARAM_ANGLE" commabd
+#     }
+# 
+# EV3_MSG_BOX_IDS = {
+#     'main': "EV3-CMD",             
+#     'param':  "EV3-PARAM"
+#     }
+
+EV3_MSG_BOX_IDS = {
+    'main': "EV3-CMD",             #This is the main block to receive commands
+    'param':  "EV3-PARAM"         #This is the block to receive the first parameter/modifier.  It gets used after the "PARAM_TIME","PARAM_DIST" OR "PARAM_ANGLE" commabd
+    }
+
 
 def printSerIntInfo(ser):
     #print('End Device Name {}  Port = {}  Baud Rate = {}   IsOpen = {}\n  XonXoff = {}'.format(ser.name,
@@ -25,10 +51,9 @@ def printSerIntInfo(ser):
 ##    print('Num bytes in waiting = {}   isOpen = {}'.format(ser.inWaiting(), ser.isOpen()))
 ##    print('CD {}   CTS {}   DSR {}   RI {}'.format(ser.getCD(), ser.getCTS(), ser.getDSR(), ser.getRI()))
 
-
 #create function with inputs for mailbox, message, message type (number, text, logic)
 def messageGuin(boxName,message,messageType):
-    print('*** messageGuin Point 0')
+#     print('*** messageGuin Point 0')
     mType=False
     #change message length based on type on message
     if messageType == "text":
@@ -40,10 +65,10 @@ def messageGuin(boxName,message,messageType):
     if messageType == "number":
             length = len(boxName) + 16
             mType = True
-    print('*** messageGuin Point 1')
+#     print('*** messageGuin Point 1')
     if mType:
         # add chars to message
-        print('*** messageGuin Point 2')
+#         print('*** messageGuin Point 2')
         btMessage = [ chr(0) for temp in range (0,length)]
         btMessage[2] = chr(1)
         btMessage[4] = chr(0x81)
@@ -53,7 +78,7 @@ def messageGuin(boxName,message,messageType):
         payloadPointer = 8 + len(boxName)
         #add different chars based on message type
         if messageType == "text" :
-                print('*** messageGuin Point 3')
+#                 print('*** messageGuin Point 3')
                 btMessage[payloadPointer] = chr((len(message) + 1) & 0xff)
                 btMessage[payloadPointer + 1] = chr((len(message) + 1) >> 8)
                 btMessage[payloadPointer + 2:len(message)] = message
@@ -70,12 +95,12 @@ def messageGuin(boxName,message,messageType):
                 endPoint = payloadPointer + 4
         btMessage[0] = chr((endPoint & 0xff))
         btMessage[1] = chr(endPoint >> 8)
-        print('*** messageGuin Point 4')
+#         print('*** messageGuin Point 4')
 ##        print('*** btmessage = {}'.format(btMessage))
 ##        return None                    # for debugging--DELETE
         return btMessage #output the converted message
     else: #output error message
-        print('*** messageGuin Point 5')
+#         print('*** messageGuin Point 5')
         print("Bad Message")
         return "error"
 ##    print('*** Returning now...')

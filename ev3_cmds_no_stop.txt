@@ -1,0 +1,6 @@
+fwd
+rvs
+faster
+slower
+exit
+

@@ -1,0 +1,7 @@
+fwd
+rvs
+faster
+slower
+stopev3
+exit
+

@@ -1,0 +1,5 @@
+fwd
+rvs
+faster
+slower
+
